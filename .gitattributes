@@ -1,0 +1,8 @@
+# Normalize line endings to LF on checkout across all platforms so tooling
+# (Biome formatter, byte-preserving saves) behaves identically on Windows.
+* text=auto eol=lf
+
+# Binary assets — never touch.
+*.png binary
+*.woff2 binary
+*.ico binary

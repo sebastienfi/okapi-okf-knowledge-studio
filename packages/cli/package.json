@@ -1,0 +1,66 @@
+{
+  "name": "okapi-okf",
+  "version": "0.1.0",
+  "description": "Okapi - an OKF Knowledge Studio. Visualize, explore, audit, edit and query OKF (Open Knowledge Format) bundles from one command.",
+  "keywords": [
+    "okf",
+    "open-knowledge-format",
+    "knowledge-graph",
+    "graph",
+    "markdown",
+    "cli",
+    "viewer"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "okapi": "./dist/cli.js"
+  },
+  "files": ["dist"],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "tsx watch src/dev.ts",
+    "build": "tsup",
+    "build:binaries": "pnpm dlx @yao-pkg/pkg .",
+    "start": "node dist/cli.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "pkg": {
+    "assets": ["dist/public/**/*"],
+    "targets": [
+      "node20-macos-arm64",
+      "node20-macos-x64",
+      "node20-linux-x64",
+      "node20-linux-arm64",
+      "node20-win-x64"
+    ],
+    "outputPath": "binaries"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.68.0",
+    "@hono/node-server": "^1.14.0",
+    "@okapi/core": "workspace:*",
+    "chokidar": "^4.0.3",
+    "commander": "^13.1.0",
+    "fast-glob": "^3.3.3",
+    "get-port": "^7.1.0",
+    "hono": "^4.7.4",
+    "js-yaml": "^4.1.0",
+    "mdast-util-to-string": "^4.0.0",
+    "nanospinner": "^1.2.2",
+    "open": "^10.1.0",
+    "openai": "^5.0.0",
+    "picocolors": "^1.1.1",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
+    "unified": "^11.0.5",
+    "unist-util-visit": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.0",
+    "tsup": "^8.4.0",
+    "tsx": "^4.19.3"
+  }
+}
