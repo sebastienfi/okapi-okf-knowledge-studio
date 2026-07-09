@@ -1,5 +1,15 @@
 # okapi-okf
 
+## 0.2.1
+
+### Patch Changes
+
+- ce87d20: The published package now includes the README (with working images on the npm
+  page) and the LICENSE file.
+- 5c5fe26: Releases are now published via npm trusted publishing (OIDC) with provenance
+  attestation, and the package manifest carries repository/homepage/bugs metadata.
+  No functional changes.
+
 ## 0.2.0
 
 ### Minor Changes
