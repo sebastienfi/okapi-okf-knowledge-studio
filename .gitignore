@@ -1,0 +1,11 @@
+node_modules/
+dist/
+binaries/
+coverage/
+*.log
+.DS_Store
+.env
+.env.local
+packages/cli/dist/public/
+*.tsbuildinfo
+.vitest/
