@@ -16,7 +16,8 @@
     "typecheck": "pnpm -r --parallel typecheck",
     "test": "vitest run",
     "test:watch": "vitest",
-    "changeset": "changeset"
+    "changeset": "changeset",
+    "changeset:version": "changeset version && biome format --write ."
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
