@@ -12,6 +12,13 @@
     "viewer"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sebastienfi/okapi-okf-knowledge-studio.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://github.com/sebastienfi/okapi-okf-knowledge-studio#readme",
+  "bugs": "https://github.com/sebastienfi/okapi-okf-knowledge-studio/issues",
   "type": "module",
   "bin": {
     "okapi": "./dist/cli.js"
