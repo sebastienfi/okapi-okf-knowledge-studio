@@ -6,7 +6,8 @@ Okapi is a pnpm monorepo, TypeScript end-to-end, pure ESM.
 packages/core   Pure OKF parser + shared types. No HTTP, no side effects.
 packages/cli    Hono server + `okapi` CLI. Published to npm as "okapi-okf".
 apps/web        React + Vite SPA. Built assets ship inside the CLI package.
-fixtures/       Reference bundle + crafted edge-case bundles for tests.
+okf/            Okapi's own OKF bundle (dogfood; default dev bundle).
+fixtures/       Crafted edge-case bundles for parser tests.
 ```
 
 ## The two graphs

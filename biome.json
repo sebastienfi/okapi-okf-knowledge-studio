@@ -6,7 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "ignore": ["dist", "coverage", "**/dist/**", "fixtures/**", "**/*.gen.ts"]
+    "ignore": ["dist", "coverage", "**/dist/**", "fixtures/**", "okf/**", "**/*.gen.ts"]
   },
   "organizeImports": {
     "enabled": true

@@ -1,3 +1,4 @@
+import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
@@ -6,39 +7,58 @@ import type { GraphEdge } from '../src/types';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const fixtures = path.join(here, '../../../fixtures');
+// The repo's own documentation bundle doubles as the "real bundle" fixture.
+// Load-bearing files (renaming/unlinking them breaks assertions below):
+//   overview.md, architecture/core.md, pipeline/index.md,
+//   pipeline/link-extraction.md (links /pipeline/resolve.md),
+//   decisions/ast-based-links.md (fenced fake link to /model/widget.md).
+const okf = path.join(here, '../../../okf');
 
 function edge(edges: GraphEdge[], source: string, target: string): GraphEdge | undefined {
   return edges.find((e) => e.source === source && e.target === target);
 }
 
-describe('buildGraph — real strata bundle', () => {
+describe('buildGraph - the okf dogfood bundle', () => {
   it('counts nodes, concepts and system files correctly', async () => {
-    const g = await buildGraph(path.join(fixtures, 'strata'));
-    expect(g.meta.counts.nodes).toBe(38);
-    expect(g.meta.counts.concepts).toBe(31);
-    expect(g.meta.counts.system).toBe(7); // 6 index.md + 1 log.md
+    const g = await buildGraph(okf);
+    // Independent oracle: count the .md files on disk rather than hardcoding
+    // totals, so the bundle can grow without breaking this test.
+    const entries = await fs.readdir(okf, { recursive: true, withFileTypes: true });
+    const mdFiles = entries.filter((d) => d.isFile() && d.name.endsWith('.md'));
+    const system = mdFiles.filter((d) => d.name === 'index.md' || d.name === 'log.md').length;
+    expect(g.meta.counts.nodes).toBe(mdFiles.length);
+    expect(g.meta.counts.system).toBe(system);
+    expect(g.meta.counts.concepts).toBe(mdFiles.length - system);
+    expect(g.meta.counts.concepts).toBeGreaterThanOrEqual(20); // the bundle stays substantial
     expect(g.meta.okfVersion).toBe('0.1');
   });
 
   it('extracts real cross-links as directed edges', async () => {
-    const g = await buildGraph(path.join(fixtures, 'strata'));
-    expect(edge(g.edges, 'model/repository.md', 'model/identity.md')).toBeDefined();
-    expect(edge(g.edges, 'model/repository.md', 'model/commit.md')).toBeDefined();
-    expect(edge(g.edges, 'model/repository.md', 'analytics/index.md')).toBeDefined();
+    const g = await buildGraph(okf);
+    expect(edge(g.edges, 'overview.md', 'architecture/core.md')).toBeDefined();
+    expect(edge(g.edges, 'pipeline/link-extraction.md', 'pipeline/resolve.md')).toBeDefined();
+    expect(edge(g.edges, 'index.md', 'pipeline/index.md')).toBeDefined();
   });
 
-  it('never turns a `resource:` value or Cypher fence into an edge', async () => {
-    const g = await buildGraph(path.join(fixtures, 'strata'));
-    // resource values point outside the bundle (e.g. apps/api/...): no such nodes/edges.
+  it('never turns a `resource:` value or code fence into an edge', async () => {
+    const g = await buildGraph(okf);
+    // resource values point outside the bundle (packages/, apps/, docs/, ...):
+    // no such nodes/edges may exist.
     for (const e of g.edges) {
       expect(e.target.endsWith('.md')).toBe(true);
+      expect(e.target).not.toContain('packages/');
       expect(e.target).not.toContain('apps/');
       expect(e.target).not.toContain('docs/');
     }
+    // decisions/ast-based-links.md carries a fenced `[not an edge](/model/widget.md)`
+    // on purpose: it must produce neither an edge nor a broken link.
+    expect(edge(g.edges, 'decisions/ast-based-links.md', 'model/widget.md')).toBeUndefined();
+    const decision = g.nodes.find((n) => n.id === 'decisions/ast-based-links.md');
+    expect(decision?.brokenLinks).toEqual([]);
   });
 
   it('marks index.md / log.md as system nodes with no frontmatter', async () => {
-    const g = await buildGraph(path.join(fixtures, 'strata'));
+    const g = await buildGraph(okf);
     const rootIndex = g.nodes.find((n) => n.id === 'index.md');
     const log = g.nodes.find((n) => n.id === 'log.md');
     expect(rootIndex?.isSystem).toBe(true);
@@ -48,9 +68,9 @@ describe('buildGraph — real strata bundle', () => {
   });
 
   it('sizes hub nodes higher (index files fan out)', async () => {
-    const g = await buildGraph(path.join(fixtures, 'strata'));
-    const modelIndex = g.nodes.find((n) => n.id === 'model/index.md');
-    expect(modelIndex?.degree ?? 0).toBeGreaterThan(5);
+    const g = await buildGraph(okf);
+    const pipelineIndex = g.nodes.find((n) => n.id === 'pipeline/index.md');
+    expect(pipelineIndex?.degree ?? 0).toBeGreaterThan(5);
   });
 });
 

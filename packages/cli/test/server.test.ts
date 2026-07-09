@@ -8,7 +8,12 @@ import { createApp } from '../src/server';
 import { EventHub } from '../src/sse';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const fixtures = path.join(here, '../../../fixtures');
+// The repo's own documentation bundle doubles as the API test fixture
+// (copied to a tmp dir so saves never touch the real docs).
+// Load-bearing files: overview.md (PUT round-trip), architecture/core.md
+// (type: Package). The /api/report test also pins the bundle's invariants:
+// conformant and orphan-free.
+const okfBundle = path.join(here, '../../../okf');
 
 // biome-ignore lint/suspicious/noExplicitAny: test convenience for JSON bodies
 const readJson = (res: Response): Promise<any> => res.json() as Promise<any>;
@@ -19,7 +24,7 @@ let bundle: Bundle;
 
 beforeAll(async () => {
   tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'okapi-test-'));
-  await fs.cp(path.join(fixtures, 'strata'), tmpDir, { recursive: true });
+  await fs.cp(okfBundle, tmpDir, { recursive: true });
   bundle = await Bundle.open(tmpDir);
   app = createApp({ bundle, hub: new EventHub(), publicDir: '/nonexistent', version: 'test' });
 });
@@ -29,30 +34,31 @@ afterAll(async () => {
 });
 
 describe('GET /api/graph', () => {
-  it('returns the full graph with correct counts', async () => {
+  it('returns the full graph with consistent counts', async () => {
     const res = await app.request('/api/graph');
     expect(res.status).toBe(200);
     const body = await readJson(res);
-    expect(body.meta.counts.nodes).toBe(38);
-    expect(body.meta.counts.concepts).toBe(31);
+    expect(body.meta.counts.nodes).toBe(body.meta.counts.concepts + body.meta.counts.system);
+    expect(body.meta.counts.concepts).toBeGreaterThanOrEqual(20);
     expect(body.meta.okfVersion).toBe('0.1');
   });
 
   it('drops system nodes when includeSystem=false', async () => {
+    const full = await readJson(await app.request('/api/graph'));
     const res = await app.request('/api/graph?includeSystem=false');
     const body = await readJson(res);
     expect(body.nodes.every((n: { isSystem: boolean }) => !n.isSystem)).toBe(true);
-    expect(body.nodes.length).toBe(31);
+    expect(body.nodes.length).toBe(full.meta.counts.concepts);
   });
 });
 
 describe('GET /api/node', () => {
   it('returns full detail for a node', async () => {
-    const res = await app.request('/api/node?path=model/repository.md');
+    const res = await app.request('/api/node?path=architecture/core.md');
     expect(res.status).toBe(200);
     const body = await readJson(res);
-    expect(body.node.type).toBe('Graph Node');
-    expect(body.raw).toContain('type: Graph Node');
+    expect(body.node.type).toBe('Package');
+    expect(body.raw).toContain('type: Package');
     expect(body.hash).toMatch(/^[a-f0-9]{64}$/);
     expect(body.neighbors.length).toBeGreaterThan(0);
   });
@@ -109,18 +115,23 @@ describe('PUT /api/node', () => {
 });
 
 describe('GET /api/lint & /api/report', () => {
-  it('lints the bundle', async () => {
+  it('lints the bundle and finds it conformant', async () => {
+    const graphBody = await readJson(await app.request('/api/graph'));
     const res = await app.request('/api/lint');
     const body = await readJson(res);
-    expect(typeof body.conformant).toBe('boolean');
-    expect(body.files.length).toBe(38);
+    // The dogfood bundle must stay conformant: this is the repo's own docs
+    // checking themselves in CI.
+    expect(body.conformant).toBe(true);
+    expect(body.files.length).toBe(graphBody.meta.counts.nodes);
   });
 
-  it('reports health', async () => {
+  it('reports health with no orphans', async () => {
+    const graphBody = await readJson(await app.request('/api/graph'));
     const res = await app.request('/api/report');
     const body = await readJson(res);
-    expect(body.counts.nodes).toBe(38);
-    expect(Array.isArray(body.orphans)).toBe(true);
+    expect(body.counts.nodes).toBe(graphBody.meta.counts.nodes);
+    // Content invariant: every concept in the bundle is reachable.
+    expect(body.orphans).toEqual([]);
   });
 });
 
