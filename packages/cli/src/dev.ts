@@ -12,10 +12,11 @@ import { Watcher } from './watch';
  * the frontend gets HMR while hitting a live API + file watch on a real bundle.
  */
 
-// Default to the repo's reference bundle regardless of the process cwd
-// (pnpm runs this in packages/cli). User-supplied paths resolve from the
-// directory where `pnpm dev` was invoked (INIT_CWD), i.e. the repo root.
-const defaultBundle = fileURLToPath(new URL('../../../fixtures/strata', import.meta.url));
+// Default to the repo's own okf/ bundle (Okapi's dogfood documentation)
+// regardless of the process cwd (pnpm runs this in packages/cli).
+// User-supplied paths resolve from the directory where `pnpm dev` was
+// invoked (INIT_CWD), i.e. the repo root.
+const defaultBundle = fileURLToPath(new URL('../../../okf', import.meta.url));
 const supplied = process.argv[2] ?? process.env.OKAPI_BUNDLE;
 const bundlePath = supplied
   ? path.resolve(process.env.INIT_CWD ?? process.cwd(), supplied)

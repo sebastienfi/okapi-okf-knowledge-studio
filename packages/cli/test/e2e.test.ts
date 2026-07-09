@@ -5,7 +5,10 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const cliEntry = path.join(here, '../src/cli.ts');
-const fixture = path.join(here, '../../../fixtures/strata');
+// The repo's own documentation bundle doubles as the e2e fixture.
+// Load-bearing: architecture/core.md (type: Package); the health check pins
+// the bundle name 'okf' (basename of the bundle directory).
+const bundleDir = path.join(here, '../../../okf');
 
 // biome-ignore lint/suspicious/noExplicitAny: test convenience for JSON bodies
 const readJson = (res: Response): Promise<any> => res.json() as Promise<any>;
@@ -16,7 +19,7 @@ let baseUrl: string;
 beforeAll(async () => {
   child = spawn(
     process.execPath,
-    ['--import', 'tsx', cliEntry, fixture, '--no-open', '--no-watch', '--port', '4650'],
+    ['--import', 'tsx', cliEntry, bundleDir, '--no-open', '--no-watch', '--port', '4650'],
     { stdio: ['ignore', 'pipe', 'pipe'], cwd: path.join(here, '..') },
   );
 
@@ -59,19 +62,19 @@ describe('e2e: the okapi CLI serves a real bundle', () => {
   it('reports health', async () => {
     const body = await readJson(await fetch(`${baseUrl}/api/health`));
     expect(body.ok).toBe(true);
-    expect(body.bundle).toBe('strata');
+    expect(body.bundle).toBe('okf');
   });
 
-  it('serves the graph with correct counts', async () => {
+  it('serves the graph with consistent counts', async () => {
     const body = await readJson(await fetch(`${baseUrl}/api/graph`));
-    expect(body.meta.counts.nodes).toBe(38);
-    expect(body.meta.counts.concepts).toBe(31);
+    expect(body.meta.counts.nodes).toBe(body.meta.counts.concepts + body.meta.counts.system);
+    expect(body.meta.counts.concepts).toBeGreaterThanOrEqual(20);
     expect(body.meta.okfVersion).toBe('0.1');
   });
 
   it('serves a node with rendered detail', async () => {
-    const body = await readJson(await fetch(`${baseUrl}/api/node?path=model/repository.md`));
-    expect(body.node.type).toBe('Graph Node');
+    const body = await readJson(await fetch(`${baseUrl}/api/node?path=architecture/core.md`));
+    expect(body.node.type).toBe('Package');
     expect(body.neighbors.length).toBeGreaterThan(0);
   });
 

@@ -108,7 +108,7 @@ The graph is the OKF **document** graph: nodes are `.md` files, edges are the ma
 
 ```bash
 pnpm install
-pnpm dev              # Vite (5173) + API (4317) against fixtures/strata
+pnpm dev              # Vite (5173) + API (4317) against okf/ (Okapi's own bundle)
 pnpm test             # unit + in-process API tests
 pnpm build            # build web + cli
 pnpm lint             # Biome

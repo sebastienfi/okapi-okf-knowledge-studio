@@ -64,7 +64,6 @@ export function MarkdownView({
         const r = typeof src === 'string' ? resolveLink(src, currentDir) : null;
         const finalSrc =
           r?.kind === 'asset' ? `/api/files/${r.path}` : typeof src === 'string' ? src : '';
-        // biome-ignore lint/a11y/useAltText: alt is forwarded from source markdown
         return <img src={finalSrc} alt={alt ?? ''} loading="lazy" />;
       },
     }),
