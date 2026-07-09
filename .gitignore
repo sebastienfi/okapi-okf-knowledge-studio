@@ -9,3 +9,7 @@ coverage/
 packages/cli/dist/public/
 *.tsbuildinfo
 .vitest/
+
+# copied into the package by prepack (packages/cli/scripts/prepare-publish.mjs)
+packages/cli/README.md
+packages/cli/LICENSE

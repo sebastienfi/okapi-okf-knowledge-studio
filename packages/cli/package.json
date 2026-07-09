@@ -31,6 +31,8 @@
     "dev": "tsx watch src/dev.ts",
     "build": "tsup",
     "build:binaries": "pnpm dlx @yao-pkg/pkg .",
+    "prepack": "node scripts/prepare-publish.mjs",
+    "postpack": "node scripts/prepare-publish.mjs clean",
     "start": "node dist/cli.js",
     "typecheck": "tsc --noEmit"
   },
