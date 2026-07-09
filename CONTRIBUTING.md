@@ -9,8 +9,8 @@ Requires **Node ≥ 22.13** (pnpm 11 needs it) and **pnpm 11**. The published
 development and CI.
 
 ```bash
-git clone https://github.com/okf-tools/okapi
-cd okapi
+git clone https://github.com/sebastienfi/okapi-okf-knowledge-studio
+cd okapi-okf-knowledge-studio
 pnpm install
 ```
 

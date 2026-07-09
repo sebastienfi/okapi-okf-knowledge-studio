@@ -48,8 +48,8 @@ That parses the bundle, starts a local server, and opens your browser. That's it
 |---|---|---|
 | **npx** (zero-install) | `npx okapi-okf ./bundle` | Anyone with Node ≥ 20 |
 | **npm global** | `npm i -g okapi-okf` then `okapi ./bundle` | Engineers |
-| **Homebrew** | `brew install okf-tools/tap/okapi` | macOS / Linux |
-| **Prebuilt binary** | download from [Releases](https://github.com/okf-tools/okapi/releases) | No Node required |
+| **Homebrew** | `brew install sebastienfi/tap/okapi` | macOS / Linux |
+| **Prebuilt binary** | download from [Releases](https://github.com/sebastienfi/okapi-okf-knowledge-studio/releases) | No Node required |
 
 ## CLI
 
