@@ -1,6 +1,6 @@
 {
   "name": "okapi-okf",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Okapi - an OKF Knowledge Studio. Visualize, explore, audit, edit and query OKF (Open Knowledge Format) bundles from one command.",
   "keywords": [
     "okf",
