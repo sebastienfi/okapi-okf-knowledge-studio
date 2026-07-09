@@ -11,7 +11,9 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        node: [20, 22]
+        # pnpm 11 requires Node >= 22.13, so the dev/CI floor is 22 even though
+        # the published package runs on Node >= 20 at runtime.
+        node: [22, 24]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4

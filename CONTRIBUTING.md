@@ -4,7 +4,9 @@ Thanks for your interest in improving Okapi!
 
 ## Setup
 
-Requires **Node ≥ 20** and **pnpm 11**.
+Requires **Node ≥ 22.13** (pnpm 11 needs it) and **pnpm 11**. The published
+`okapi-okf` package itself runs on Node ≥ 20 — the higher floor is only for local
+development and CI.
 
 ```bash
 git clone https://github.com/okf-tools/okapi
