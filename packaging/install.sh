@@ -1,9 +1,9 @@
 #!/usr/bin/env sh
 # Install the Okapi prebuilt binary. Usage:
-#   curl -fsSL https://raw.githubusercontent.com/okf-tools/okapi/main/packaging/install.sh | sh
+#   curl -fsSL https://raw.githubusercontent.com/sebastienfi/okapi-okf-knowledge-studio/main/packaging/install.sh | sh
 set -eu
 
-REPO="okf-tools/okapi"
+REPO="sebastienfi/okapi-okf-knowledge-studio"
 BIN_DIR="${OKAPI_BIN_DIR:-/usr/local/bin}"
 
 os="$(uname -s | tr '[:upper:]' '[:lower:]')"

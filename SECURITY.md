@@ -2,7 +2,7 @@
 
 ## Reporting a vulnerability
 
-Please report security issues privately via [GitHub Security Advisories](https://github.com/okf-tools/okapi/security/advisories/new)
+Please report security issues privately via [GitHub Security Advisories](https://github.com/sebastienfi/okapi-okf-knowledge-studio/security/advisories/new)
 rather than opening a public issue. We aim to respond within a few business days.
 
 ## Security model
