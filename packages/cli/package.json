@@ -23,9 +23,7 @@
   "bin": {
     "okapi": "./dist/cli.js"
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "engines": {
     "node": ">=20"
   },
@@ -37,9 +35,7 @@
     "typecheck": "tsc --noEmit"
   },
   "pkg": {
-    "assets": [
-      "dist/public/**/*"
-    ],
+    "assets": ["dist/public/**/*"],
     "targets": [
       "node20-macos-arm64",
       "node20-macos-x64",
