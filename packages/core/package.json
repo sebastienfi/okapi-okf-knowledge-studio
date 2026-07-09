@@ -1,6 +1,7 @@
 {
   "name": "@okapi/core",
   "version": "0.1.0",
+  "private": true,
   "description": "Pure OKF bundle parser: walk, frontmatter, link resolution, graph model, conformance.",
   "type": "module",
   "exports": {
